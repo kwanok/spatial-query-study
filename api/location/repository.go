@@ -6,16 +6,6 @@ import (
 	"log"
 )
 
-type Repository struct {
-	Conn *sql.DB
-}
-
-var r Repository
-
-func init() {
-	r.Conn = db.Conn
-}
-
 func FetchNearLocationsV1(query *NearQuery) []Location {
 	return scanLocations(getRowsByStDistanceSphere(query))
 }
@@ -41,15 +31,15 @@ func scanLocations(rows *sql.Rows) []Location {
 }
 
 func getRowsByStDistanceSphere(query *NearQuery) *sql.Rows {
-	rows, err := r.Conn.Query(`
+	rows, err := db.Conn.Query(`
 	SELECT 
     	id as 'id', 
     	name as 'name', 
-    	ST_X(coords) AS 'x', 
-    	ST_Y(coords) AS 'y' 
-	FROM places
-	WHERE ST_Distance_Sphere(Point(?, ?), coords) < ?
-	`, query.X, query.Y, query.Km)
+    	ST_X(coordinates) AS 'x', 
+    	ST_Y(coordinates) AS 'y' 
+	FROM locations
+	WHERE ST_Distance_Sphere(Point(?, ?), coordinates) < ?;
+	`, query.X, query.Y, query.Km*1000)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,15 +48,36 @@ func getRowsByStDistanceSphere(query *NearQuery) *sql.Rows {
 }
 
 func getRowsBySpatialIndex(query *NearQuery) *sql.Rows {
-	rows, err := r.Conn.Query(`
+	rows, err := db.Conn.Query(`
 	SELECT 
     	id as 'id', 
     	name as 'name', 
-    	ST_X(coords) AS 'x', 
-    	ST_Y(coords) AS 'y' 
-	FROM places
-	WHERE ST_Contains(ST_Buffer(Point(?, ?), ?, 'KILOMETERS'), coords);
-	`, query.X, query.Y, query.Km)
+    	ST_X(coordinates) AS 'x', 
+    	ST_Y(coordinates) AS 'y' 
+	FROM locations
+	WHERE ST_Contains(ST_Buffer(Point(?, ?), ?), coordinates);
+	`, query.X, query.Y, query.Km*1000)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return rows
+}
+
+func FetchPolygonLocations(query *PolygonQuery) []Location {
+	return scanLocations(getRowsByPolygon(query))
+}
+
+func getRowsByPolygon(query *PolygonQuery) *sql.Rows {
+	rows, err := db.Conn.Query(`
+	SELECT 
+		id as 'id', 
+		name as 'name', 
+		ST_X(coordinates) AS 'x', 
+		ST_Y(coordinates) AS 'y' 
+	FROM locations
+	WHERE ST_Contains(ST_PolyFromText(?), coordinates);
+	`, query.ConvertPolygon())
 	if err != nil {
 		log.Fatal(err)
 	}
