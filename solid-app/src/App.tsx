@@ -7,8 +7,10 @@ import Map from "./lib/Map";
 const App: Component = () => {
     return (
         <div class={styles.App}>
-            <Map />
-            <Map />
+            <div class={styles.Maps}>
+                <Map title="Compare Distance" version={1}/>
+                <Map title="Use Spatial Index" version={2}/>
+            </div>
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import {onMount} from "solid-js";
+import {createSignal, onMount} from "solid-js";
 import styles from '../App.module.css';
 
 type Bounds = {
@@ -22,50 +22,58 @@ type Point = {
 }
 
 
-const fetchLocation = async (bounds: Bounds) => {
-    const URL = `http://localhost:30001/locations/polygon?x1=${bounds.getWest()}&y1=${bounds.getSouth()}&x2=${bounds.getEast()}&y2=${bounds.getNorth()}`
+const fetchLocation = async (bounds: Bounds, version: number) => {
+    const URL = `http://localhost:30001/locations/v${version}/polygon?x1=${bounds.getWest()}&y1=${bounds.getSouth()}&x2=${bounds.getEast()}&y2=${bounds.getNorth()}`
     const response = await fetch(URL)
     return await response.json()
 }
 
-const buildMap = (div: HTMLDivElement) => {
+const buildMap = (div: HTMLDivElement, version: number, time: HTMLHeadingElement) => {
     const map = L.map(div).setView([37.5686, 126.9871], 16)
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 18,
+        minZoom: 13
     }).addTo(map);
 
-    L.marker([37.5686, 126.9871]).addTo(map)
-        .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-        .openPopup();
-
-    map.on('movestart', () => {
-        // remove all markers
+    const removeAllMarkers = () => {
         map.eachLayer((layer) => {
             if (layer instanceof L.Marker) {
-                map.removeLayer(layer)
+                layer.remove()
             }
         })
-    })
+    }
 
-    map.on('moveend', () => {
-        let bounds = map.getBounds()
-        fetchLocation(bounds).then((locations: [Location]) => {
-            locations.forEach(location => {
-                L.marker([location.point.y, location.point.x]).addTo(map)
-                    .bindPopup(location.name)
-            })
+    const mapMoveEndEvent = async () => {
+        const startedAt = performance.now()
+        removeAllMarkers()
+        const bounds = map.getBounds()
+        const locations: Array<Location> = await fetchLocation(bounds, version)
+        locations.forEach((location) => {
+            L.marker([location.point.y, location.point.x])
+                .addTo(map)
+                .bindPopup(location.name)
         })
-    })
 
+        const endedAt = performance.now()
+        const elapsedTime = Math.round(endedAt - startedAt)
+        time.textContent = `Elapsed Time: ${elapsedTime}ms`
+    }
 
+    map.on('moveend', mapMoveEndEvent)
 }
 
-const Map = () => {
+const Map = ({title, version}: { title: string, version: number }) => {
     let mapDiv: any;
-    onMount(() => buildMap(mapDiv));
+    let time: any;
+    onMount(() => buildMap(mapDiv, version, time));
     return (
-        <div ref={mapDiv} id='main-map' class={styles.mapBox}/>
+        <div class={styles.MapBox}>
+            <h2>{title}</h2>
+            <p ref={time}>Elapsed Time:</p>
+            <div ref={mapDiv} id='main-map' class={styles.Map}/>
+        </div>
     );
 }
 
