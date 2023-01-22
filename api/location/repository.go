@@ -64,11 +64,32 @@ func getRowsBySpatialIndex(query *NearQuery) *sql.Rows {
 	return rows
 }
 
-func FetchPolygonLocations(query *PolygonQuery) []Location {
-	return scanLocations(getRowsByPolygon(query))
+func FetchPolygonLocationsV1(query *PolygonQuery) []Location {
+	return scanLocations(getRowsByPolygonV1(query))
 }
 
-func getRowsByPolygon(query *PolygonQuery) *sql.Rows {
+func FetchPolygonLocationsV2(query *PolygonQuery) []Location {
+	return scanLocations(getRowsByPolygonV2(query))
+}
+
+func getRowsByPolygonV1(query *PolygonQuery) *sql.Rows {
+	rows, err := db.Conn.Query(`
+	SELECT 
+		id as 'id', 
+		name as 'name', 
+		ST_X(coordinates) AS 'x', 
+		ST_Y(coordinates) AS 'y' 
+	FROM locations
+	WHERE ST_X(coordinates) BETWEEN ? AND ? AND ST_Y(coordinates) BETWEEN ? AND ?;
+	`, query.X1, query.X2, query.Y1, query.Y2)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return rows
+}
+
+func getRowsByPolygonV2(query *PolygonQuery) *sql.Rows {
 	rows, err := db.Conn.Query(`
 	SELECT 
 		id as 'id', 

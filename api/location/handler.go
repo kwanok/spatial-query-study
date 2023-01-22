@@ -55,11 +55,20 @@ func NearHandlerV2(c *fiber.Ctx) error {
 	return c.JSON(FetchNearLocationsV2(query))
 }
 
-func PolygonHandler(c *fiber.Ctx) error {
+func PolygonHandlerV1(c *fiber.Ctx) error {
 	query := new(PolygonQuery)
 	if err := Validate(c, query); err != nil {
 		return err
 	}
 
-	return c.JSON(FetchPolygonLocations(query))
+	return c.JSON(FetchPolygonLocationsV1(query))
+}
+
+func PolygonHandlerV2(c *fiber.Ctx) error {
+	query := new(PolygonQuery)
+	if err := Validate(c, query); err != nil {
+		return err
+	}
+
+	return c.JSON(FetchPolygonLocationsV2(query))
 }

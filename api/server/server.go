@@ -30,7 +30,8 @@ func Start() {
 	locations := app.Group("/locations")
 	locations.Get("/v1/near", location.NearHandler)
 	locations.Get("/v2/near", location.NearHandlerV2)
-	locations.Get("/polygon", location.PolygonHandler)
+	locations.Get("/v1/polygon", location.PolygonHandlerV1)
+	locations.Get("/v2/polygon", location.PolygonHandlerV2)
 
 	app.Listen(fmt.Sprintf(":%s", config.RuntimeConf.Server.Port))
 }
