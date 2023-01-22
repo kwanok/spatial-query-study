@@ -1,6 +1,6 @@
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import {createSignal, onMount} from "solid-js";
+import {onMount} from "solid-js";
 import styles from '../App.module.css';
 
 type Bounds = {
@@ -61,7 +61,10 @@ const buildMap = (div: HTMLDivElement, version: number, time: HTMLHeadingElement
         time.textContent = `Elapsed Time: ${elapsedTime}ms`
     }
 
+
     map.on('moveend', mapMoveEndEvent)
+
+    mapMoveEndEvent().then(r => r)
 }
 
 const Map = ({title, version}: { title: string, version: number }) => {
