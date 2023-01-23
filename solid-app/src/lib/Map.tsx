@@ -23,7 +23,8 @@ type Point = {
 
 
 const fetchLocation = async (bounds: Bounds, version: number) => {
-    const URL = `http://localhost:30001/locations/v${version}/polygon?x1=${bounds.getWest()}&y1=${bounds.getSouth()}&x2=${bounds.getEast()}&y2=${bounds.getNorth()}`
+    const API_URL = import.meta.env.VITE_API_URL
+    const URL = `${API_URL}/locations/v${version}/polygon?x1=${bounds.getWest()}&y1=${bounds.getSouth()}&x2=${bounds.getEast()}&y2=${bounds.getNorth()}`
     const response = await fetch(URL)
     return await response.json()
 }
