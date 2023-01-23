@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/kwanok/spatial-query-study/api/config"
 	"github.com/kwanok/spatial-query-study/api/db"
@@ -8,9 +9,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	ConfigFilePath = flag.String("config", "runtime-config-local.yaml", "Path to config file")
+)
+
 func init() {
+	flag.Parse()
+
 	viper.AddConfigPath("./config")
-	viper.SetConfigFile("../global_config.yaml")
+	viper.SetConfigFile(*ConfigFilePath)
 	viper.SetConfigType("yaml")
 	err := viper.ReadInConfig()
 	if err != nil {

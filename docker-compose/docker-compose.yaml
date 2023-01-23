@@ -1,0 +1,38 @@
+version: '3.6'
+services:
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "5003:3306"
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: db_live
+      MYSQL_ROOT_PASSWORD: kvQrtdLpzqYTJGRDa4Cq
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - spatial-query-study-network
+    hostname: mysql-server
+  api-server:
+    image: ghcr.io/kwanok/spatial-query-study/api-server:latest
+    ports:
+      - "5001:8080"
+    networks:
+      - spatial-query-study-network
+    hostname: api-server
+    restart: always
+  frontend:
+    image: ghcr.io/kwanok/spatial-query-study/frontend:latest
+    ports:
+      - "5002:80"
+    networks:
+      - spatial-query-study-network
+    hostname: frontend
+
+volumes:
+  mysql-data:
+    driver: local
+
+networks:
+  spatial-query-study-network:
+    external: true
