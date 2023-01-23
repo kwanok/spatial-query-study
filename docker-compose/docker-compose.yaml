@@ -6,9 +6,11 @@ services:
       - "5003:3306"
     volumes:
       - ./mysql:/docker-entrypoint-initdb.d
+      - ./mysql-config/mycustom.cnf:/etc/mysql/conf.d/custom.cnf
     environment:
       MYSQL_DATABASE: db_live
       MYSQL_ROOT_PASSWORD: kvQrtdLpzqYTJGRDa4Cq
+      MYSQL_CHARSET: utf8mb4
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     networks:
       - spatial-query-study-network
