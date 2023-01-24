@@ -1,7 +1,12 @@
 # Spatial Query Study
 
-
 | 해당 프로젝트에서는 Spatial Index를 사용해서 공부한 내용을 담았습니다.
+
+![go](https://img.shields.io/badge/Go-00ADD8?logo=go&logoColor=white)
+![fiber](https://img.shields.io/badge/fiber-00ADD8?logo=go&logoColor=white)
+![typescript](https://img.shields.io/badge/typescript-3178C6?logo=typescript&logoColor=white)
+![solidjs](https://img.shields.io/badge/solid-2C4F7C?logo=solidjs&logoColor=white)
+![mysql](https://img.shields.io/badge/mysql-4479A1?logo=mysql&logoColor=white)
 
 ## Spatial Index란?
 
