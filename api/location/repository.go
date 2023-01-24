@@ -2,8 +2,10 @@ package location
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/kwanok/spatial-query-study/api/db"
 	"log"
+	"time"
 )
 
 func FetchNearLocationsV1(query *NearQuery) []Location {
@@ -73,6 +75,7 @@ func FetchPolygonLocationsV2(query *PolygonQuery) []Location {
 }
 
 func getRowsByPolygonV1(query *PolygonQuery) *sql.Rows {
+	elapsed := time.Now()
 	rows, err := db.Conn.Query(`
 	SELECT 
 		id as 'id', 
@@ -86,10 +89,13 @@ func getRowsByPolygonV1(query *PolygonQuery) *sql.Rows {
 		log.Fatal(err)
 	}
 
+	fmt.Printf("getRowsByPolygonV1: %s)\n", time.Since(elapsed))
+
 	return rows
 }
 
 func getRowsByPolygonV2(query *PolygonQuery) *sql.Rows {
+	elapsed := time.Now()
 	rows, err := db.Conn.Query(`
 	SELECT 
 		id as 'id', 
@@ -102,6 +108,8 @@ func getRowsByPolygonV2(query *PolygonQuery) *sql.Rows {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Printf("getRowsByPolygonV2: %s)\n", time.Since(elapsed))
 
 	return rows
 }
