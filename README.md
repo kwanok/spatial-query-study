@@ -5,7 +5,7 @@
 ![go](https://img.shields.io/badge/Go-00ADD8?logo=go&logoColor=white)
 ![fiber](https://img.shields.io/badge/fiber-00ADD8?logo=go&logoColor=white)
 ![typescript](https://img.shields.io/badge/typescript-3178C6?logo=typescript&logoColor=white)
-![solidjs](https://img.shields.io/badge/solid-2C4F7C?logo=solidjs&logoColor=white)
+![solidjs](https://img.shields.io/badge/solidjs-2C4F7C?logo=solid&logoColor=white)
 ![mysql](https://img.shields.io/badge/mysql-4479A1?logo=mysql&logoColor=white)
 
 ## Spatial Index란?
